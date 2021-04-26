@@ -11,3 +11,5 @@ This code is written for things that involve only pure rotations.
 */so3/* implements quaternions as the classical vector space over 1, i, j, and k.
 This is more computationally efficient and easier to normalize back to a unit quaternion.
 Additionally, it is very extensible, since we can map a quaternion to SO(3) and then compose rotations really nicely with scaling and translations.
+
+We can also map SU(2) to SO(3) but I think that it is nice to keep SU(2) all on its own for beauty's sake and separately implement the unit ijk-quaternions with the map to SO(3).
