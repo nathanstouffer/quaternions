@@ -1,7 +1,7 @@
 # quaternions
 
 This repo contains some code that I wrote exploring quaternions.
-Note that the contents of */deps* are from a course that I took on computer graphics taught by Dr. David Millman at Montana State University.
+Note that the contents of */src/deps/* are from a course that I took on computer graphics taught by Dr. David Millman at Montana State University.
 
 In the */src/* directory, there are two subdirectories: */su2/* and */so3/*.
 
