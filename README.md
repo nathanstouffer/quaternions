@@ -3,7 +3,7 @@
 This repo contains some code that I wrote exploring quaternions.
 Note that the contents of */src/deps/* are from a course that I took on computer graphics taught by Dr. David Millman at Montana State University.
 
-In the */src/* directory, there are two subdirectories: */su2/* and */so3/*.
+In the */src/* directory, there are two subdirectories with code that I wrote: */su2/* and */so3/*.
 
 */su2/* contains code that keeps the quaternions in their full glory as the set SU(2), a subset of the ring of 2 by 2 matrices over the complex numbers.
 This code is written for things that involve only pure rotations.
