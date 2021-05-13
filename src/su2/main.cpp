@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -45,8 +46,10 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) { return -1; }
 
+    int width  = 640;
+    int height = 480;
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "quaternions", NULL, NULL);
+    window = glfwCreateWindow(width, height, "quaternions", NULL, NULL);
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -69,9 +72,9 @@ int main(void) {
     // create c
     DiscoCube cube;
     Cylinder cylinder(200, 1, .2, .4);
-    Cone cone(100, 1, .2, .4);
-    Sphere sphere(100, .5, 1, .2, .4);
-    Torus torus(100, .75, .25, 1, .2, .4);
+    Cone cone(200, .2, 1, .4);
+    Sphere sphere(200, .5, .4, .2, 1);
+    Torus torus(200, .5, .25, .4, 1, .2);
 
     // array for shapes
     Shape shapes[5] = { cube, cylinder, cone, sphere, torus };
@@ -88,24 +91,48 @@ int main(void) {
       // describe vertex layout
       glGenVertexArrays(1, &VAO[s]);
       glBindVertexArray(VAO[s]);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-              (void*)0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*)0);
       glEnableVertexAttribArray(0);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-              (void*)(3*sizeof(float)));
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*)(3*sizeof(float)));
       glEnableVertexAttribArray(1);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float),
-              (void*)(6*sizeof(float)));
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*)(6*sizeof(float)));
       glEnableVertexAttribArray(2);
     }
 
-    SU2Quat rot(PI/4, Vector4(0.0, 0.0, 1.0, 0.0));
+    // enable z-buffering
+    glEnable(GL_DEPTH_TEST);
+
+    // set up light shading
+    Vector4 ambient_intensity(0.15, 0.15, 0.15);
+    Vector4 light_pos(2, 1.5, 2);
+    Vector4 intensity(1, 1, 1);
+    Vector4 eye(0, 0, 1);
+    float power = 64.0f;
+
+    Vector4 axis(1.0, 1.0, 1.0, 0.0);
+    SU2Quat rot(0, axis);
 
     // create the shaders
     Shader shader("../vert.glsl", "../frag.glsl");
+    shader.use();
+
+    float plane = 1.5;
+    Matrix4 projection;
+    projection.ortho(-plane, plane, -plane, plane, -plane, plane);
+
+    // set up output file
+    // start ffmpeg telling it to expect raw rgba 720p-60hz frames
+    // -i - tells it to read frames from stdin
+    const char* cmd = "ffmpeg -r 120 -f rawvideo -pix_fmt rgba -s 640x480 -i - "
+                      "-threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip output.mp4";
+
+    // open pipe to ffmpeg's stdin in binary write mode
+    FILE* ffmpeg = _popen(cmd, "wb");
+    int* buffer = new int[width*height];
 
     // which shape to use
     unsigned int s = 0;
+    float period = 3.0;
     // variable to tell previous state of SPACEKEY
     unsigned int space_state = GLFW_RELEASE;
     /* Loop until the user closes the window */
@@ -115,16 +142,25 @@ int main(void) {
 
         /* Render here */
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // use the shader
         shader.use();
 
+        Uniform::set(shader.id(), "projection", projection);
+        Uniform::set(shader.id(), "ambient", ambient_intensity);
+        Uniform::set(shader.id(), "light_pos", light_pos);
+        Uniform::set(shader.id(), "intensity", intensity);
+        Uniform::set(shader.id(), "eye", eye);
+        Uniform::set(shader.id(), "power", power);
+
+        rot = SU2Quat(2*PI*std::sin(glfwGetTime()/period), axis);
+
         // set shader variables
-        unsigned int zvecLoc = glGetUniformLocation(shader.id(), "zvec");
-        glUniform2fv(zvecLoc, 1, GL_FALSE, { rot.mtx(0,0).real(), rot.mtx(0,0).imag() });
-        unsigned int wvecLoc = glGetUniformLocation(shader.id(), "wvec");
-        glUniform2fv(wvecLoc, 1, GL_FALSE, { rot.mtx(0,1).real(), rot.mtx(0,1).imag() });
+        GLuint zvecLoc = glGetUniformLocation(shader.id(), "zvec");
+        GLuint wvecLoc = glGetUniformLocation(shader.id(), "wvec");
+        glUniform2f(zvecLoc, rot.mtx(0,0).real(), rot.mtx(0,0).imag());
+        glUniform2f(wvecLoc, rot.mtx(0,1).real(), rot.mtx(0,1).imag());
 
         // render the shape
         glBindVertexArray(VAO[s]);
@@ -135,9 +171,12 @@ int main(void) {
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
-        /* Poll for and process events */
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        fwrite(buffer, sizeof(int)*width*height, 1, ffmpeg);
         glfwPollEvents();
     }
+
+    _pclose(ffmpeg);
 
     glfwTerminate();
     return 0;

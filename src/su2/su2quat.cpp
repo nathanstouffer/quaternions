@@ -20,11 +20,11 @@ class SU2Quat {
 
         SU2Quat (float theta, Vector4 axis) {
             axis = axis.normalized();
-            float c = std::cos(theta/2);        // compute sin and cos of theta/2
-            float s = std::sin(theta/2);
+            float c = std::cos(theta/2.0);        // compute sin and cos of theta/2
+            float s = std::sin(theta/2.0);
             this->mtx = CompMtx2();
-            this->mtx.set(0, 0, compf(s,          -s*axis.z()));      this->mtx.set(0, 1, compf(s*axis.y(), -s*axis.x()));
-            this->mtx.set(1, 0, compf(s*axis.y(), -s*axis.x()));      this->mtx.set(1, 1, compf(s,           s*axis.z()));
+            this->mtx.set(0, 0, compf(c,          -s*axis.z()));      this->mtx.set(0, 1, compf(s*axis.y(), -s*axis.x()));
+            this->mtx.set(1, 0, compf(s*axis.y(), -s*axis.x()));      this->mtx.set(1, 1, compf(c,           s*axis.z()));
         }
 
 
@@ -37,8 +37,6 @@ class SU2Quat {
         SU2Quat operator*(const SU2Quat& m) const {
             return SU2Quat(this->mtx * m.mtx);
         }
-
-
 
 };
 

@@ -1,22 +1,19 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec3 aNorm;
 
-out vec3 myColor;
-out vec3 myFragPos;
+uniform mat4 projection;
 
 uniform vec2 zvec;
 uniform vec2 wvec;
 
-struct Comp {
-    float x;
-    float y;
-};
+out vec3 ourColor;
+out vec3 ourFragPos;
+out vec3 ourNorm;
 
-struct Quat {
-    Comp z;
-    Comp w;
-};
+struct Comp { float x, y; };
+struct Quat { Comp z, w; };
 
 float modulus(Comp c)       { return sqrt(c.x*c.x + c.y*c.y); }
 Comp neg(Comp c)            { return Comp(-c.x, -c.y); }
@@ -31,7 +28,27 @@ Quat mult(Quat q1, Quat q2) {
 }
 
 void main() {
-    gl_Position = vec4(aPos, 1.0);
-    myColor = aColor;
-    myFragPos = vec3(aPos);
+    Comp z = Comp(zvec.x, zvec.y);
+    Comp w = Comp(wvec.x, wvec.y);
+
+    Quat A     = Quat(z, w);
+    Quat A_inv = Quat(conj(z), neg(w));
+    Quat B     = Quat(Comp(0.0, aPos.x),  Comp(aPos.y,  aPos.z));
+    Quat N     = Quat(Comp(0.0, aNorm.x), Comp(aNorm.y, aNorm.z));
+
+    // compute transformed point
+    Quat model_prod = mult(A, B);
+    model_prod = mult(model_prod, A_inv);
+    vec4 model_pos = vec4(model_prod.z.y, model_prod.w.x, model_prod.w.y, 1.0);
+
+    // compute transformed norm
+    Quat norm_prod = mult(A, N);
+    norm_prod = mult(norm_prod, A_inv);
+    vec4 norm_pos = vec4(norm_prod.z.y, norm_prod.w.x, norm_prod.w.y, 1.0);
+
+    // set the output variables
+    gl_Position = projection * model_pos;
+    ourColor    = aColor;
+    ourFragPos  = vec3(model_pos);
+    ourNorm     = vec3(norm_pos);
 }

@@ -32,6 +32,11 @@ public:
         glUniform1f(loc, v);
     }
 
+    static void set(GLuint shader, const std::string &name, const float v0, const float v1) {
+        GLuint loc = location(shader, name);
+        glUniform2f(loc, v0, v1);
+    }
+
 private:
 
     static GLuint location(GLuint shader, const std::string &name) {
@@ -40,5 +45,3 @@ private:
 };
 
 #endif
-
-
