@@ -10,6 +10,8 @@ In the */src/* directory, there are two subdirectories with code that I wrote: *
 */su2/* contains code that keeps the quaternions in their full glory as the set SU(2), a subset of the ring of 2 by 2 matrices over the complex numbers.
 This code is written for things that involve only pure rotations.
 Here is a gif of a torus periodically rotating about (1,1,1) \in \R^3.
+Sorry about the jittery frame rate, it was the best I could get on the readme.
+If you want a smoother video, check out the mp4 file.
 
 ![rotating torus](/output/su2/torus_3s_20fps.gif)
 
