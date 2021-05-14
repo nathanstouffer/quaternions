@@ -2,15 +2,16 @@
 
 This repo contains some code that I wrote exploring quaternions.
 Note that the contents of */src/deps/* are from a course that I took on computer graphics taught by Dr. David Millman at Montana State University.
+Thanks to [this](https://ezgif.com/video-to-gif) website for converting mp4 files to gifs to dislay in this README.
 
 In the */src/* directory, there are two subdirectories with code that I wrote: */su2/* and */so3/*.
 
-# SU2
+# SU(2)
 */su2/* contains code that keeps the quaternions in their full glory as the set SU(2), a subset of the ring of 2 by 2 matrices over the complex numbers.
 This code is written for things that involve only pure rotations.
 Here is a gif of a torus periodically rotating about (1,1,1) \in \R^3.
 
-![rotating torus](/output/su2/torus_3s_120fps.gif)
+![rotating torus](/output/su2/torus_3s_20fps.gif)
 
 # ijk
 **not yet implemented:** /ijk/* implements quaternions as the classical vector space over 1, i, j, and k.
