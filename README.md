@@ -16,8 +16,9 @@ If you want a smoother video, check out the mp4 file.
 ![rotating torus](/output/su2/torus_3s_20fps.gif)
 
 # ijk
-**not yet implemented:** /ijk/* implements quaternions as the classical vector space over 1, i, j, and k.
+/ijk/* implements quaternions as the classical vector space over 1, i, j, and k.
 This is more computationally efficient and easier to normalize back to a unit quaternion.
 Additionally, it is very extensible, since we can map a quaternion to SO(3) and then compose rotations really nicely with scaling and translations.
+I chose not to make any graphics since they would pretty much be the same as SU(2).
 
 We can also map SU(2) to SO(3) but I think that it is nice to keep SU(2) all on its own for beauty's sake and separately implement the unit ijk-quaternions with the map to SO(3).

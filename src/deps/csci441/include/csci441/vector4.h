@@ -31,6 +31,10 @@ public:
     float y() const { return values[Y]; }
     float z() const { return values[Z]; }
     float w() const { return values[W]; }
+    float x(float x) { return values[X] = x; }
+    float y(float y) { return values[Y] = y; }
+    float z(float z) { return values[Z] = z; }
+    float w(float w) { return values[W] = w; }
     float coord(int idx) { return values[idx % N_COORDS]; }
 
     Vector4 scale(double s) const {
@@ -51,6 +55,10 @@ public:
                 -det(values[X], values[Z], v.values[X], v.values[Z]),
                  det(values[X], values[Y], v.values[X], v.values[Y]),
                  0);
+    }
+
+    double dot(Vector4 oth) {
+        return x()*oth.x() + y()*oth.y() + z()*oth.z() + w()*oth.w();
     }
 
     double norm() const {
