@@ -14,7 +14,7 @@ Here is a gif of a torus periodically rotating about (1,1,1) \in \R^3.
 Sorry about the jittery frame rate, it was the best I could get on the readme.
 If you want a smoother video, check out the mp4 file.
 
-![rotating torus](/output/su2/torus_3s_20fps.gif)
+![rotating torus](/output/su2/torus_2s_25fps.gif)
 
 # ijk
 /ijk/* implements quaternions as the classical vector space over 1, i, j, and k.
