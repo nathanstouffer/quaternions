@@ -132,7 +132,7 @@ int main(void) {
 
     // which shape to use
     unsigned int s = 0;
-    float period = 3.0;
+    float period = 2.0;
     // variable to tell previous state of SPACEKEY
     unsigned int space_state = GLFW_RELEASE;
     /* Loop until the user closes the window */
@@ -154,7 +154,8 @@ int main(void) {
         Uniform::set(shader.id(), "eye", eye);
         Uniform::set(shader.id(), "power", power);
 
-        rot = SU2Quat(2*PI*std::sin(glfwGetTime()/period), axis);
+        float mag_scalar = std::sin(glfwGetTime()/period) / 2.0f + 0.5f;
+        rot = SU2Quat(2*PI*mag_scalar, axis);
 
         // set shader variables
         GLuint zvecLoc = glGetUniformLocation(shader.id(), "zvec");
